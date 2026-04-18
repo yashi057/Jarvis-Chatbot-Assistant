@@ -1,5 +1,5 @@
 <div align="center">
-
+<div align="center">
 ```
      ██╗ █████╗ ██████╗ ██╗   ██╗██╗███████╗
      ██║██╔══██╗██╔══██╗██║   ██║██║██╔════╝
@@ -8,6 +8,7 @@
 ╚█████╔╝██║  ██║██║  ██║ ╚████╔╝ ██║███████║
  ╚════╝ ╚═╝  ╚═╝╚═╝  ╚═╝  ╚═══╝  ╚═╝╚══════╝
 ```
+</div>
 
 ### Just A Rather Very Intelligent System
 #### *An AI-powered desktop assistant — Iron Man style*
@@ -155,53 +156,6 @@ jarvis-ai/
 - Python 3.10 or higher
 - A microphone (for voice input)
 - An Anthropic API key — free at [console.anthropic.com](https://console.anthropic.com/settings/keys)
-
-### Step 1 — Clone the repo
-
-```bash
-git clone https://github.com/YOUR_USERNAME/jarvis-ai.git
-cd jarvis-ai
-```
-
-### Step 2 — Create a virtual environment
-
-```bash
-python -m venv venv
-
-# Activate it:
-venv\Scripts\activate        # Windows
-source venv/bin/activate     # macOS / Linux
-```
-
-> A virtual environment keeps this project's packages separate from your system Python. Always use one.
-
-### Step 3 — Install dependencies
-
-```bash
-pip install -r requirements.txt
-```
-
-> **Windows users:** If `pyaudio` fails, run this instead:
-> ```bash
-> pip install pipwin && pipwin install pyaudio
-> ```
-
-### Step 4 — Add your API key
-
-```bash
-cp .env.example .env
-```
-
-Open `.env` and replace the placeholder:
-```
-ANTHROPIC_API_KEY=sk-ant-your-actual-key-here
-```
-
-### Step 5 — Run Jarvis 🎉
-
-```bash
-python main.py
-```
 
 ---
 
