@@ -8,11 +8,6 @@
 
 <br/>
 
-### Just A Rather Very Intelligent System
-#### *An AI-powered desktop assistant — Iron Man style*
-
-<br/>
-
 ![Python](https://img.shields.io/badge/Python-3.10%2B-3776AB?style=for-the-badge&logo=python&logoColor=white)
 ![Claude API](https://img.shields.io/badge/Claude_API-Sonnet_4-D97706?style=for-the-badge&logo=anthropic&logoColor=white)
 ![CustomTkinter](https://img.shields.io/badge/UI-CustomTkinter-00BFFF?style=for-the-badge)
