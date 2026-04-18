@@ -1,14 +1,12 @@
 <div align="center">
 <div align="center">
-```
-     ██╗ █████╗ ██████╗ ██╗   ██╗██╗███████╗
-     ██║██╔══██╗██╔══██╗██║   ██║██║██╔════╝
-     ██║███████║██████╔╝██║   ██║██║███████╗
-██   ██║██╔══██║██╔══██╗╚██╗ ██╔╝██║╚════██║
-╚█████╔╝██║  ██║██║  ██║ ╚████╔╝ ██║███████║
- ╚════╝ ╚═╝  ╚═╝╚═╝  ╚═╝  ╚═══╝  ╚═╝╚══════╝
-```
-</div>
+
+# 🤖 J.A.R.V.I.S
+
+### Just A Rather Very Intelligent System
+#### *An AI-powered desktop assistant — Iron Man style*
+
+<br/>
 
 ### Just A Rather Very Intelligent System
 #### *An AI-powered desktop assistant — Iron Man style*
