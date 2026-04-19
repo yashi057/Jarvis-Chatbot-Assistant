@@ -2,7 +2,7 @@
   
 # 🤖 J.A.R.V.I.S
 ### Just A Rather Very Intelligent System
-#### *An AI-powered desktop assistant — Iron Man style*
+#### *An AI-powered desktop assistant*
 
 <br/>
 
@@ -13,7 +13,7 @@
 
 <br/>
 
-> **"Sometimes you gotta run before you can walk."** — Tony Stark </div>
+> **"Sometimes you gotta run before you can walk."** </div>
 
 ---
 
@@ -130,11 +130,11 @@ jarvis-ai/
 │   ├── commands.py           # ⚡  Built-in command handler (no API needed)
 │   └── api_client.py         # 🧠  Claude API integration + chat history
 │
-├── .env                      # 🔑  YOUR API key (never commit this!)
-├── .env.example              # 📋  Template — safe to share on GitHub
-├── .gitignore                # 🚫  Tells Git what NOT to upload
-├── requirements.txt          # 📦  All dependencies listed here
-└── README.md                 # 📖  This file
+├── .env                      # 🔑  
+├── .env.example              # 📋  
+├── .gitignore                # 🚫  
+├── requirements.txt          # 📦  
+└── README.md                 # 📖  
 ```
 
 ---
