@@ -230,7 +230,7 @@ python main.py
 
 ### 🧠 Claude AI (everything else)
 
-Anything not matched above → sent to Claude with full context:
+Anything not matched above:
 
 ```
 You:    "Explain how neural networks work"
