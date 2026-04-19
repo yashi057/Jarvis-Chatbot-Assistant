@@ -1,183 +1,313 @@
 """
-JARVIS AI Assistant
-A modern AI-powered desktop assistant with voice input and Claude API integration.
+JARVIS AI Assistant — Iron Man HUD Edition
+Animated HUD, live system stats, boot sequence, typing indicator.
 """
 
 import customtkinter as ctk
+import tkinter as tk
 import threading
 import datetime
+import math
+import psutil
 import webbrowser
 from voice import speak, take_command
 from command import process_command
 from api_client import ask_claude
 
-# ── Theme Setup ──────────────────────────────────────────────────────────────
+# ── Palette ───────────────────────────────────────────────────────────────────
+BG          = "#050a0f"
+BG_PANEL    = "#080e15"
+BG_CARD     = "#0a1520"
+BG_MSG      = "#0d1e2e"
+CYAN        = "#00d4ff"
+CYAN_DIM    = "#0a4a5e"
+CYAN_GLOW   = "#00aacc"
+ORANGE      = "#ff6b1a"
+ORANGE_DIM  = "#3d1a06"
+GREEN       = "#00ff88"
+GREEN_DIM   = "#003320"
+WHITE       = "#e8f4f8"
+DIM         = "#2a4a5e"
+DIMMER      = "#0f2030"
+FONT_HUD    = ("Courier New", 11, "bold")
+FONT_TITLE  = ("Courier New", 22, "bold")
+FONT_MSG    = ("Courier New", 12)
+FONT_SMALL  = ("Courier New", 10)
+FONT_TINY   = ("Courier New", 9)
+
 ctk.set_appearance_mode("dark")
 ctk.set_default_color_theme("blue")
 
-ACCENT    = "#00BFFF"
-BG_DARK   = "#0d0d0d"
-BG_PANEL  = "#111827"
-BG_CARD   = "#1f2937"
-TEXT_DIM  = "#6b7280"
-TEXT_MAIN = "#e5e7eb"
-USER_CLR  = "#3b82f6"
-BOT_CLR   = "#00BFFF"
-FONT_MAIN = ("Segoe UI", 14)
-FONT_BOLD = ("Segoe UI", 14, "bold")
-FONT_SMALL= ("Segoe UI", 11)
 
-
-# ── Main Window ───────────────────────────────────────────────────────────────
-class JarvisApp(ctk.CTk):
+# ── Main App ──────────────────────────────────────────────────────────────────
+class JarvisHUD(ctk.CTk):
     def __init__(self):
         super().__init__()
+        self.title("J.A.R.V.I.S  //  MARK VII")
+        self.geometry("1100x720")
+        self.minsize(900, 600)
+        self.configure(fg_color=BG)
 
-        self.title("JARVIS — AI Assistant")
-        self.geometry("900x680")
-        self.minsize(700, 500)
-        self.configure(fg_color=BG_DARK)
+        self._listening   = False
+        self._thinking    = False
+        self._angle       = 0
+        self._pulse       = 0
+        self._scan_y      = 0
+        self._boot_done   = False
+        self._typing_dots = 0
 
-        self._is_listening = False
-        self._build_layout()
-        self._welcome()
+        self._build_ui()
+        self._start_animations()
+        self._boot_sequence()
 
     # ── Layout ────────────────────────────────────────────────────────────────
-    def _build_layout(self):
-        # Left sidebar
-        self.sidebar = ctk.CTkFrame(self, width=220, fg_color=BG_PANEL, corner_radius=0)
-        self.sidebar.pack(side="left", fill="y")
-        self.sidebar.pack_propagate(False)
+    def _build_ui(self):
+        # ── Left panel (HUD sidebar) ──
+        self.left = tk.Frame(self, bg=BG_PANEL, width=280)
+        self.left.pack(side="left", fill="y")
+        self.left.pack_propagate(False)
         self._build_sidebar()
 
-        # Main chat area
-        self.main_frame = ctk.CTkFrame(self, fg_color=BG_DARK)
-        self.main_frame.pack(side="right", fill="both", expand=True)
-        self._build_chat()
+        # ── Divider ──
+        tk.Frame(self, bg=CYAN_DIM, width=1).pack(side="left", fill="y")
+
+        # ── Right panel (chat) ──
+        self.right = tk.Frame(self, bg=BG)
+        self.right.pack(side="right", fill="both", expand=True)
+        self._build_chat_area()
         self._build_input_bar()
 
+    # ── Sidebar ───────────────────────────────────────────────────────────────
     def _build_sidebar(self):
-        # Logo / Title
-        ctk.CTkLabel(
-            self.sidebar, text="J.A.R.V.I.S",
-            font=("Segoe UI", 22, "bold"), text_color=ACCENT
-        ).pack(pady=(28, 2))
-        ctk.CTkLabel(
-            self.sidebar, text="AI Desktop Assistant",
-            font=FONT_SMALL, text_color=TEXT_DIM
-        ).pack(pady=(0, 24))
-
-        ctk.CTkFrame(self.sidebar, height=1, fg_color="#374151").pack(fill="x", padx=20)
-
-        # Clock label
-        self.clock_label = ctk.CTkLabel(
-            self.sidebar, text="", font=("Consolas", 20, "bold"),
-            text_color=TEXT_MAIN
+        # HUD ring canvas
+        self.ring_canvas = tk.Canvas(
+            self.left, width=240, height=240,
+            bg=BG_PANEL, highlightthickness=0
         )
-        self.clock_label.pack(pady=(20, 0))
-        self.date_label = ctk.CTkLabel(
-            self.sidebar, text="", font=FONT_SMALL, text_color=TEXT_DIM
+        self.ring_canvas.pack(pady=(24, 0))
+
+        # Status text under ring
+        self.status_var = tk.StringVar(value="[ SYSTEM ONLINE ]")
+        tk.Label(
+            self.left, textvariable=self.status_var,
+            font=FONT_HUD, bg=BG_PANEL, fg=CYAN
+        ).pack(pady=(8, 0))
+
+        self.mode_var = tk.StringVar(value="MODE: STANDBY")
+        tk.Label(
+            self.left, textvariable=self.mode_var,
+            font=FONT_TINY, bg=BG_PANEL, fg=DIM
+        ).pack(pady=(2, 16))
+
+        # Divider
+        tk.Frame(self.left, bg=CYAN_DIM, height=1).pack(fill="x", padx=20)
+
+        # System stats
+        tk.Label(
+            self.left, text="[ SYSTEM DIAGNOSTICS ]",
+            font=FONT_TINY, bg=BG_PANEL, fg=DIM
+        ).pack(pady=(14, 6))
+
+        self.cpu_bar  = self._stat_row("CPU LOAD")
+        self.ram_bar  = self._stat_row("MEMORY")
+        self.bat_bar  = self._stat_row("POWER CELL")
+
+        tk.Frame(self.left, bg=CYAN_DIM, height=1).pack(fill="x", padx=20, pady=14)
+
+        # Clock
+        self.clock_var = tk.StringVar()
+        tk.Label(
+            self.left, textvariable=self.clock_var,
+            font=("Courier New", 28, "bold"), bg=BG_PANEL, fg=WHITE
+        ).pack()
+        self.date_var = tk.StringVar()
+        tk.Label(
+            self.left, textvariable=self.date_var,
+            font=FONT_TINY, bg=BG_PANEL, fg=DIM
+        ).pack(pady=(2, 16))
+
+        tk.Frame(self.left, bg=CYAN_DIM, height=1).pack(fill="x", padx=20)
+
+        # Quick actions
+        tk.Label(
+            self.left, text="[ QUICK ACCESS ]",
+            font=FONT_TINY, bg=BG_PANEL, fg=DIM
+        ).pack(pady=(14, 8))
+
+        self._hud_btn("▶  YOUTUBE",  lambda: webbrowser.open("https://youtube.com"))
+        self._hud_btn("◉  GOOGLE",   lambda: webbrowser.open("https://google.com"))
+        self._hud_btn("⌂  GITHUB",   lambda: webbrowser.open("https://github.com"))
+        self._hud_btn("✕  CLEAR LOG", self._clear_chat)
+
+    def _stat_row(self, label: str):
+        row = tk.Frame(self.left, bg=BG_PANEL)
+        row.pack(fill="x", padx=20, pady=3)
+        tk.Label(row, text=label, font=FONT_TINY, bg=BG_PANEL,
+                 fg=DIM, width=12, anchor="w").pack(side="left")
+        canvas = tk.Canvas(row, width=100, height=10,
+                           bg=DIMMER, highlightthickness=0)
+        canvas.pack(side="left", padx=(6, 4))
+        val_lbl = tk.Label(row, text="0%", font=FONT_TINY,
+                           bg=BG_PANEL, fg=CYAN, width=5)
+        val_lbl.pack(side="left")
+        return canvas, val_lbl
+
+    def _hud_btn(self, text, cmd):
+        btn = tk.Button(
+            self.left, text=text, command=cmd,
+            font=FONT_SMALL, bg=DIMMER, fg=CYAN,
+            activebackground=CYAN_DIM, activeforeground=WHITE,
+            relief="flat", cursor="hand2", bd=0,
+            padx=10, pady=6
         )
-        self.date_label.pack(pady=(2, 20))
-        self._update_clock()
+        btn.pack(fill="x", padx=20, pady=3)
+        btn.bind("<Enter>", lambda e: btn.config(bg=CYAN_DIM))
+        btn.bind("<Leave>", lambda e: btn.config(bg=DIMMER))
 
-        ctk.CTkFrame(self.sidebar, height=1, fg_color="#374151").pack(fill="x", padx=20)
+    # ── Chat Area ─────────────────────────────────────────────────────────────
+    def _build_chat_area(self):
+        # Top bar
+        topbar = tk.Frame(self.right, bg=BG_PANEL, height=48)
+        topbar.pack(fill="x")
+        topbar.pack_propagate(False)
+        tk.Label(
+            topbar, text="  ◈  JARVIS  //  CONVERSATIONAL INTERFACE",
+            font=FONT_HUD, bg=BG_PANEL, fg=CYAN, anchor="w"
+        ).pack(side="left", fill="y")
 
-        # Quick-action buttons
-        ctk.CTkLabel(
-            self.sidebar, text="QUICK ACTIONS",
-            font=("Segoe UI", 10, "bold"), text_color=TEXT_DIM
-        ).pack(pady=(18, 8))
-
-        self._sidebar_btn("🌐  Google",   lambda: webbrowser.open("https://google.com"))
-        self._sidebar_btn("▶  YouTube",  lambda: webbrowser.open("https://youtube.com"))
-        self._sidebar_btn("🗑  Clear Chat", self._clear_chat)
-
-        # Status indicator
-        self.status_label = ctk.CTkLabel(
-            self.sidebar, text="● Ready", font=FONT_SMALL, text_color="#22c55e"
+        self.conn_label = tk.Label(
+            topbar, text="◉ CLAUDE API  ", font=FONT_TINY,
+            bg=BG_PANEL, fg=GREEN
         )
-        self.status_label.pack(side="bottom", pady=20)
+        self.conn_label.pack(side="right", fill="y")
 
-    def _sidebar_btn(self, text, command):
-        ctk.CTkButton(
-            self.sidebar, text=text, command=command,
-            fg_color=BG_CARD, hover_color="#374151",
-            text_color=TEXT_MAIN, anchor="w",
-            height=36, corner_radius=8,
-            font=FONT_SMALL
-        ).pack(fill="x", padx=16, pady=4)
+        # Scan line canvas overlay + chat frame together
+        self.chat_outer = tk.Frame(self.right, bg=BG)
+        self.chat_outer.pack(fill="both", expand=True)
 
-    def _build_chat(self):
-        self.chat_frame = ctk.CTkScrollableFrame(
-            self.main_frame, fg_color=BG_DARK, corner_radius=0
+        self.chat_scroll = ctk.CTkScrollableFrame(
+            self.chat_outer, fg_color=BG, corner_radius=0
         )
-        self.chat_frame.pack(fill="both", expand=True, padx=12, pady=(12, 0))
+        self.chat_scroll.pack(fill="both", expand=True, padx=0, pady=0)
+
+        # Typing indicator
+        self.typing_frame = tk.Frame(self.chat_scroll, bg=BG)
+        self.typing_label = tk.Label(
+            self.typing_frame, text="",
+            font=FONT_MSG, bg=BG, fg=CYAN_GLOW
+        )
+        self.typing_label.pack(anchor="w", padx=20)
 
     def _build_input_bar(self):
-        bar = ctk.CTkFrame(self.main_frame, fg_color=BG_PANEL, corner_radius=12, height=72)
-        bar.pack(fill="x", padx=12, pady=12)
+        bar = tk.Frame(self.right, bg=BG_PANEL, height=72)
+        bar.pack(fill="x")
         bar.pack_propagate(False)
 
-        self.entry = ctk.CTkEntry(
-            bar, placeholder_text="Ask Jarvis anything...",
-            font=FONT_MAIN, height=44, corner_radius=10,
-            fg_color=BG_CARD, border_color="#374151",
-            text_color=TEXT_MAIN
+        # Border top
+        tk.Frame(bar, bg=CYAN_DIM, height=1).pack(fill="x")
+
+        inner = tk.Frame(bar, bg=BG_PANEL)
+        inner.pack(fill="both", expand=True, padx=16, pady=10)
+
+        # Prompt label
+        tk.Label(
+            inner, text="▶ INPUT:", font=FONT_HUD,
+            bg=BG_PANEL, fg=ORANGE
+        ).pack(side="left", padx=(0, 8))
+
+        self.entry = tk.Entry(
+            inner, font=FONT_MSG, bg=BG_CARD, fg=WHITE,
+            insertbackground=CYAN, relief="flat",
+            bd=0, highlightthickness=1,
+            highlightbackground=DIM, highlightcolor=CYAN
         )
-        self.entry.pack(side="left", fill="x", expand=True, padx=(12, 8), pady=14)
+        self.entry.pack(side="left", fill="x", expand=True, ipady=6)
         self.entry.bind("<Return>", lambda _: self._send_text())
 
-        self.voice_btn = ctk.CTkButton(
-            bar, text="🎤", width=48, height=44,
-            font=("Segoe UI", 18), corner_radius=10,
-            fg_color=BG_CARD, hover_color="#374151",
+        self.voice_btn = tk.Button(
+            inner, text="🎤", font=("Segoe UI Emoji", 16),
+            bg=DIMMER, fg=CYAN, activebackground=ORANGE_DIM,
+            relief="flat", cursor="hand2", padx=10,
             command=self._voice_input
         )
-        self.voice_btn.pack(side="right", padx=(0, 8), pady=14)
+        self.voice_btn.pack(side="right", padx=(8, 0))
+        self.voice_btn.bind("<Enter>", lambda e: self.voice_btn.config(bg=CYAN_DIM))
+        self.voice_btn.bind("<Leave>", lambda e: self.voice_btn.config(bg=DIMMER))
 
-        ctk.CTkButton(
-            bar, text="Send", width=90, height=44,
-            font=FONT_BOLD, corner_radius=10,
-            fg_color=ACCENT, hover_color="#0099cc",
-            text_color=BG_DARK,
+        self.send_btn = tk.Button(
+            inner, text="TRANSMIT ▶▶",
+            font=FONT_HUD, bg=CYAN, fg=BG,
+            activebackground=CYAN_GLOW, activeforeground=BG,
+            relief="flat", cursor="hand2", padx=14,
             command=self._send_text
-        ).pack(side="right", padx=(0, 12), pady=14)
-
-    # ── Chat Bubbles ──────────────────────────────────────────────────────────
-    def _add_bubble(self, sender: str, message: str):
-        is_user = sender == "You"
-        color   = USER_CLR if is_user else BOT_CLR
-        side    = "e" if is_user else "w"
-        label   = sender.upper()
-
-        outer = ctk.CTkFrame(self.chat_frame, fg_color="transparent")
-        outer.pack(fill="x", pady=4, padx=8)
-
-        ctk.CTkLabel(
-            outer, text=label,
-            font=("Segoe UI", 10, "bold"), text_color=color,
-            anchor="e" if is_user else "w"
-        ).pack(anchor=side)
-
-        bubble = ctk.CTkLabel(
-            outer, text=message,
-            font=FONT_MAIN, text_color=TEXT_MAIN,
-            fg_color=BG_CARD if not is_user else "#1e3a5f",
-            corner_radius=12, wraplength=540,
-            justify="left", anchor="w",
-            padx=14, pady=10
         )
-        bubble.pack(anchor=side, pady=(2, 0))
+        self.send_btn.pack(side="right", padx=(8, 0))
 
-        # Auto-scroll
-        self.after(50, lambda: self.chat_frame._parent_canvas.yview_moveto(1.0))
+    # ── Messages ──────────────────────────────────────────────────────────────
+    def _add_msg(self, sender: str, text: str, is_boot=False):
+        now   = datetime.datetime.now().strftime("%H:%M:%S")
+        is_me = sender in ("YOU", "YOU (VOICE)")
+        color = ORANGE if is_me else CYAN
+        bg    = "#0f1e2a" if not is_me else "#1a0f0a"
+        prefix = f"[{now}] {sender} ▶▶"
 
-    def _add_system_msg(self, msg: str):
-        ctk.CTkLabel(
-            self.chat_frame, text=msg,
-            font=FONT_SMALL, text_color=TEXT_DIM
-        ).pack(pady=6)
+        outer = tk.Frame(self.chat_scroll, bg=BG, pady=3)
+        outer.pack(fill="x", padx=12)
+
+        tk.Label(
+            outer, text=prefix, font=FONT_TINY,
+            bg=BG, fg=color, anchor="w"
+        ).pack(fill="x")
+
+        bubble = tk.Frame(outer, bg=bg, padx=14, pady=8)
+        bubble.pack(fill="x", pady=(2, 0))
+
+        # Left color bar
+        tk.Frame(bubble, bg=color, width=2).pack(side="left", fill="y", padx=(0, 10))
+
+        tk.Label(
+            bubble, text=text, font=FONT_MSG,
+            bg=bg, fg=WHITE, anchor="w",
+            justify="left", wraplength=640
+        ).pack(side="left", fill="x", expand=True)
+
+        # Scroll to bottom
+        self.after(60, lambda: self.chat_scroll._parent_canvas.yview_moveto(1.0))
+
+    def _add_system_line(self, text: str, color=DIM):
+        tk.Label(
+            self.chat_scroll, text=f"  //  {text}",
+            font=FONT_TINY, bg=BG, fg=color, anchor="w"
+        ).pack(fill="x", padx=20, pady=1)
+        self.after(60, lambda: self.chat_scroll._parent_canvas.yview_moveto(1.0))
+
+    def _clear_chat(self):
+        for w in self.chat_scroll.winfo_children():
+            w.destroy()
+        self._add_system_line("LOG CLEARED", DIM)
+
+    # ── Boot Sequence ─────────────────────────────────────────────────────────
+    def _boot_sequence(self):
+        lines = [
+            ("INITIALIZING J.A.R.V.I.S  MARK VII ...", CYAN, 0),
+            ("LOADING NEURAL PATHWAYS ...", DIM, 300),
+            ("VOICE ENGINE: ONLINE", GREEN, 600),
+            ("SPEECH RECOGNITION: ONLINE", GREEN, 900),
+            ("CLAUDE API: CONNECTING ...", ORANGE, 1200),
+            ("ALL SYSTEMS NOMINAL. WELCOME BACK.", CYAN, 1800),
+        ]
+        for text, color, delay in lines:
+            self.after(delay, lambda t=text, c=color: self._add_system_line(t, c))
+
+        self.after(2200, self._boot_greet)
+
+    def _boot_greet(self):
+        self._boot_done = True
+        hour = datetime.datetime.now().hour
+        greet = "Good morning" if hour < 12 else "Good evening" if hour >= 17 else "Good afternoon"
+        msg = f"{greet}. All systems online. How can I assist you today?"
+        self._add_msg("JARVIS", msg)
+        threading.Thread(target=lambda: speak(msg), daemon=True).start()
 
     # ── Actions ───────────────────────────────────────────────────────────────
     def _send_text(self):
@@ -185,67 +315,160 @@ class JarvisApp(ctk.CTk):
         if not query:
             return
         self.entry.delete(0, "end")
-        self._add_bubble("You", query)
-        threading.Thread(target=self._handle_query, args=(query,), daemon=True).start()
+        self._add_msg("YOU", query)
+        threading.Thread(target=self._handle, args=(query,), daemon=True).start()
 
     def _voice_input(self):
-        if self._is_listening:
+        if self._listening:
             return
         threading.Thread(target=self._do_voice, daemon=True).start()
 
     def _do_voice(self):
-        self._is_listening = True
-        self._set_status("🎙 Listening...", "#f59e0b")
-        self.voice_btn.configure(fg_color="#f59e0b")
+        self._listening = True
+        self.after(0, lambda: [
+            self.voice_btn.config(bg=ORANGE, fg=BG),
+            self.status_var.set("[ LISTENING... ]"),
+            self.mode_var.set("MODE: VOICE INPUT")
+        ])
         query = take_command()
-        self.voice_btn.configure(fg_color=BG_CARD)
-        self._is_listening = False
-        self._set_status("● Ready", "#22c55e")
+        self._listening = False
+        self.after(0, lambda: self.voice_btn.config(bg=DIMMER, fg=CYAN))
         if query:
-            self.after(0, lambda: self._add_bubble("You (voice)", query))
-            self._handle_query(query)
+            self.after(0, lambda: self._add_msg("YOU (VOICE)", query))
+            self._handle(query)
+        else:
+            self.after(0, lambda: self._set_status("STANDBY"))
 
-    def _handle_query(self, query: str):
-        self._set_status("⚙ Thinking...", ACCENT)
+    def _handle(self, query: str):
+        self._thinking = True
+        self.after(0, lambda: self._set_status("PROCESSING"))
+        self.after(0, self._show_typing)
+
         response = process_command(query)
-
-        # If built-in command didn't match, fall back to Claude API
         if response is None:
             response = ask_claude(query)
 
-        self.after(0, lambda: self._add_bubble("Jarvis", response))
+        self._thinking = False
+        self.after(0, self._hide_typing)
+        self.after(0, lambda: self._add_msg("JARVIS", response))
+        self.after(0, lambda: self._set_status("STANDBY"))
         speak(response)
-        self._set_status("● Ready", "#22c55e")
 
-        # Handle quit command
-        if query.lower() in ("exit", "bye", "goodbye"):
-            self.after(1500, self.quit)
+        if any(w in query.lower() for w in ("exit", "bye", "goodbye")):
+            self.after(2000, self.quit)
 
-    def _clear_chat(self):
-        for widget in self.chat_frame.winfo_children():
-            widget.destroy()
-        self._add_system_msg("— Chat cleared —")
+    def _show_typing(self):
+        self.typing_frame.pack(fill="x", before=self.chat_scroll.winfo_children()[-1]
+                               if self.chat_scroll.winfo_children() else None)
+        self._animate_typing()
 
-    # ── Clock ─────────────────────────────────────────────────────────────────
+    def _hide_typing(self):
+        self.typing_frame.pack_forget()
+
+    def _animate_typing(self):
+        if not self._thinking:
+            return
+        dots = "." * (self._typing_dots % 4)
+        self.typing_label.config(text=f"  JARVIS IS PROCESSING {dots}")
+        self._typing_dots += 1
+        self.after(400, self._animate_typing)
+
+    def _set_status(self, mode: str):
+        modes = {
+            "STANDBY":    ("[ SYSTEM ONLINE ]",    "MODE: STANDBY",      CYAN),
+            "PROCESSING": ("[ PROCESSING ... ]",   "MODE: NEURAL ACTIVE", ORANGE),
+            "VOICE":      ("[ LISTENING ... ]",    "MODE: VOICE INPUT",   GREEN),
+        }
+        label, sub, color = modes.get(mode, modes["STANDBY"])
+        self.status_var.set(label)
+        self.mode_var.set(sub)
+
+    # ── Animations ────────────────────────────────────────────────────────────
+    def _start_animations(self):
+        self._animate_ring()
+        self._animate_stats()
+        self._update_clock()
+
+    def _animate_ring(self):
+        c = self.ring_canvas
+        c.delete("all")
+        cx, cy, r = 120, 120, 90
+
+        # Outer static rings
+        for radius, col, w in [(r+22, CYAN_DIM, 1), (r+14, CYAN_DIM, 1), (r+6, DIM, 1)]:
+            c.create_oval(cx-radius, cy-radius, cx+radius, cy+radius,
+                         outline=col, width=w)
+
+        # Rotating arc
+        start = -self._angle
+        color = ORANGE if self._thinking else CYAN if self._listening else CYAN_GLOW
+        extent = 300 if self._thinking else 240
+        c.create_arc(cx-r, cy-r, cx+r, cy+r,
+                    start=start, extent=extent,
+                    outline=color, width=3, style="arc")
+
+        # Counter arc
+        c.create_arc(cx-r+8, cy-r+8, cx+r-8, cy+r-8,
+                    start=start+180, extent=60,
+                    outline=DIM, width=1, style="arc")
+
+        # Inner pulsing circle
+        pulse_r = 28 + int(6 * math.sin(self._pulse * 0.15))
+        p_color = ORANGE if self._thinking else GREEN if self._listening else CYAN
+        c.create_oval(cx-pulse_r, cy-pulse_r, cx+pulse_r, cy+pulse_r,
+                     outline=p_color, width=2)
+
+        # Center dot
+        c.create_oval(cx-4, cy-4, cx+4, cy+4, fill=p_color, outline="")
+
+        # Tick marks
+        for i in range(12):
+            angle_r = math.radians(i * 30)
+            x1 = cx + (r+6)  * math.cos(angle_r)
+            y1 = cy + (r+6)  * math.sin(angle_r)
+            x2 = cx + (r+12) * math.cos(angle_r)
+            y2 = cy + (r+12) * math.sin(angle_r)
+            c.create_line(x1, y1, x2, y2,
+                         fill=CYAN if i % 3 == 0 else DIM, width=1)
+
+        self._angle = (self._angle + (4 if self._thinking else 2)) % 360
+        self._pulse += 1
+        self.after(40, self._animate_ring)
+
+    def _animate_stats(self):
+        try:
+            cpu = psutil.cpu_percent(interval=None)
+            ram = psutil.virtual_memory().percent
+            bat = psutil.sensors_battery()
+            bat_pct = bat.percent if bat else 100
+
+            self._draw_bar(self.cpu_bar, cpu)
+            self._draw_bar(self.ram_bar, ram)
+            self._draw_bar(self.bat_bar, bat_pct, invert=True)
+        except Exception:
+            pass
+        self.after(1500, self._animate_stats)
+
+    def _draw_bar(self, bar_tuple, value: float, invert=False):
+        canvas, label = bar_tuple
+        canvas.delete("all")
+        w, h = 100, 10
+        fill = int((value / 100) * w)
+        color = GREEN if value < 60 else ORANGE if value < 85 else "#ff3333"
+        if invert:
+            color = GREEN if value > 40 else ORANGE if value > 20 else "#ff3333"
+        canvas.create_rectangle(0, 0, w, h, fill=DIMMER, outline=DIM)
+        canvas.create_rectangle(0, 0, fill, h, fill=color, outline="")
+        label.config(text=f"{int(value)}%", fg=color)
+
     def _update_clock(self):
         now = datetime.datetime.now()
-        self.clock_label.configure(text=now.strftime("%H:%M:%S"))
-        self.date_label.configure(text=now.strftime("%d %b %Y"))
+        self.clock_var.set(now.strftime("%H:%M:%S"))
+        self.date_var.set(now.strftime("%A  //  %d %b %Y").upper())
         self.after(1000, self._update_clock)
 
-    # ── Helpers ───────────────────────────────────────────────────────────────
-    def _set_status(self, text: str, color: str):
-        self.after(0, lambda: self.status_label.configure(text=text, text_color=color))
 
-    def _welcome(self):
-        hour = datetime.datetime.now().hour
-        greet = "Good morning" if hour < 12 else "Good evening" if hour >= 17 else "Good afternoon"
-        msg = f"{greet}! I'm Jarvis. How can I help you today?"
-        self._add_bubble("Jarvis", msg)
-        threading.Thread(target=lambda: speak(msg), daemon=True).start()
-
-
-# ── Entry Point ───────────────────────────────────────────────────────────────
+# ── Run ───────────────────────────────────────────────────────────────────────
 if __name__ == "__main__":
-    app = JarvisApp()
+    app = JarvisHUD()
     app.mainloop()
