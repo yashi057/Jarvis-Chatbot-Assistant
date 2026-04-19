@@ -1,224 +1,323 @@
 <div align="center">
-  
-# 🤖 J.A.R.V.I.S
-### Just A Rather Very Intelligent System
-#### *An AI-powered desktop assistant*
+
+<img src="https://readme-typing-svg.demolab.com?font=Share+Tech+Mono&size=13&duration=3000&pause=1000&color=00D4FF&center=true&vCenter=true&multiline=true&width=600&height=100&lines=%5B+INITIALIZING+J.A.R.V.I.S+MARK+VII+...+%5D;%5B+NEURAL+PATHWAYS%3A+ONLINE+%5D;%5B+ALL+SYSTEMS+NOMINAL.+WELCOME+BACK.+%5D" alt="Boot Sequence"/>
 
 <br/>
 
-![Python](https://img.shields.io/badge/Python-3.10%2B-3776AB?style=for-the-badge&logo=python&logoColor=white)
-![Claude API](https://img.shields.io/badge/Claude_API-Sonnet_4-D97706?style=for-the-badge&logo=anthropic&logoColor=white)
-![CustomTkinter](https://img.shields.io/badge/UI-CustomTkinter-00BFFF?style=for-the-badge)
-![License](https://img.shields.io/badge/License-MIT-22c55e?style=for-the-badge)
+```
+     ██╗ █████╗ ██████╗ ██╗   ██╗██╗███████╗
+     ██║██╔══██╗██╔══██╗██║   ██║██║██╔════╝
+     ██║███████║██████╔╝██║   ██║██║███████╗
+██   ██║██╔══██║██╔══██╗╚██╗ ██╔╝██║╚════██║
+╚█████╔╝██║  ██║██║  ██║ ╚████╔╝ ██║███████║
+ ╚════╝ ╚═╝  ╚═╝╚═╝  ╚═╝  ╚═══╝  ╚═╝╚══════╝
+```
+
+### `// MARK VII — IRON MAN HUD EDITION`
+
+*Just A Rather Very Intelligent System — now with a real HUD*
 
 <br/>
 
-> **"Sometimes you gotta run before you can walk."** </div>
+![Python](https://img.shields.io/badge/PYTHON-3.10%2B-00d4ff?style=for-the-badge&logo=python&logoColor=00d4ff&labelColor=050a0f)
+![Claude](https://img.shields.io/badge/CLAUDE-SONNET_4-ff6b1a?style=for-the-badge&logo=anthropic&logoColor=ff6b1a&labelColor=050a0f)
+![tkinter](https://img.shields.io/badge/UI-TKINTER_HUD-00ff88?style=for-the-badge&logoColor=00ff88&labelColor=050a0f)
+![License](https://img.shields.io/badge/LICENSE-MIT-00d4ff?style=for-the-badge&labelColor=050a0f)
+
+<br/>
+
+> *"Sometimes you gotta run before you can walk."*
+> — Tony Stark
+
+</div>
 
 ---
-
-## 🧠 What is JARVIS?
-
-JARVIS is a **voice-enabled AI desktop assistant** built in Python. You can talk to it, type to it, and it responds — both in text and out loud. For simple tasks like opening YouTube or checking the time, it handles it instantly. For everything else, it connects to **Anthropic's Claude AI** and gives you intelligent, context-aware answers.
-
-Think of it as a personal command center that lives on your desktop.
-
----
-
-## ✨ Features at a Glance
-
-| Feature | Description |
-|---|---|
-| 🧠 Claude AI Brain | Powered by `claude-sonnet-4` for intelligent responses |
-| 🎤 Voice Input | Speak commands using your microphone |
-| 🔊 Text-to-Speech | Jarvis talks back using `pyttsx3` |
-| 💬 Chat UI | Dark-mode interface with styled message bubbles |
-| ⚡ Instant Commands | Time, date, search, open sites, jokes — no API call needed |
-| 🔁 Memory | Maintains conversation context within a session |
-| 🕐 Live Clock | Real-time clock and date in the sidebar |
-
----
-
-## 🏗️ Architecture — How It Works
-
-Here's the full flow from when you type/speak something to when Jarvis responds:
 
 ```
-┌─────────────────────────────────────────────────────────────────┐
-│                        USER INPUT                               │
-│              (Keyboard typing  OR  Microphone)                  │
-└────────────────────┬────────────────────────────────────────────┘
-                     │
-          ┌──────────▼──────────┐
-          │      main.py        │  ← CustomTkinter UI
-          │  (App + Chat UI)    │    handles layout, buttons,
-          │                     │    chat bubbles, clock
-          └──────┬──────┬───────┘
-                 │      │
-    ┌────────────▼─┐  ┌─▼──────────────┐
-    │  voice.py    │  │  commands.py   │
-    │              │  │                │
-    │ • pyttsx3    │  │ Check if query │
-    │   (speak)    │  │ matches a      │
-    │ • SpeechRec  │  │ built-in rule  │
-    │   (listen)   │  │                │
-    └────────────┬─┘  └─┬──────────────┘
-                 │       │
-                 │    MATCH?
-                 │    ├── ✅ YES → Return instant response
-                 │    │           (time / open YouTube / etc.)
-                 │    │
-                 │    └── ❌ NO  → Fall back to Claude API
-                 │                        │
-                 │             ┌──────────▼──────────┐
-                 │             │   api_client.py      │
-                 │             │                      │
-                 │             │ • Sends message to   │
-                 │             │   Anthropic Claude   │
-                 │             │ • Maintains history  │
-                 │             │   (last 20 turns)    │
-                 │             │ • Returns response   │
-                 │             └──────────┬───────────┘
-                 │                        │
-                 │             ┌──────────▼───────────┐
-                 │             │   Anthropic Cloud    │
-                 │             │  claude-sonnet-4     │
-                 │             │  (AI processing)     │
-                 │             └──────────────────────┘
-                 │
-    ┌────────────▼──────────────────────────┐
-    │           RESPONSE                    │
-    │  • Displayed as chat bubble in UI     │
-    │  • Spoken aloud via pyttsx3 (TTS)     │
-    └───────────────────────────────────────┘
+◈ ─────────────────────────────────────────────────── SYSTEM STATUS ── ◈
+  VOICE ENGINE    ██████████  ONLINE
+  SPEECH INPUT    ██████████  ONLINE
+  CLAUDE API      ██████████  CONNECTED
+  HUD INTERFACE   ██████████  ACTIVE
+◈ ──────────────────────────────────────────────────────────────────── ◈
 ```
-
-### The Smart Fallback System
-
-The key design decision in this project is the **two-layer command system**:
-
-1. `commands.py` checks the input first — if it's a simple task like `"open youtube"` or `"what time is it"`, it handles it locally in milliseconds with zero API cost.
-2. If nothing matches, `api_client.py` fires a request to Claude with the full conversation history so Claude has context.
-
-This means Jarvis is **fast for common tasks** and **smart for everything else**.
 
 ---
 
-## 🛠️ Tech Stack
+## `[ 01 ]` // WHAT IS THIS?
 
-| Library | Version | Why We Used It |
+JARVIS is a **voice-enabled AI desktop assistant** with a full **Iron Man HUD interface** — animated rotating rings, live system diagnostics, a cinematic boot sequence, and Claude AI powering every conversation.
+
+This isn't just a chatbot. It's a personal command center that looks like it belongs in Stark Tower.
+
+---
+
+## `[ 02 ]` // SCREENSHOTS
+
+```
+┌─────────────────────────────────────────────────────────────────────┐
+│  ◈  JARVIS  //  MARK VII                              ◉ CLAUDE API  │
+├────────────────────┬────────────────────────────────────────────────┤
+│                    │  //  INITIALIZING J.A.R.V.I.S MARK VII ...     │
+│    ╭──────────╮    │  //  ALL SYSTEMS NOMINAL. WELCOME BACK.        │
+│   ╱  ◉  ◉  ◉  ╲   │                                                │
+│  │   ───────   │   │  [22:41:05] JARVIS ▶▶                         │
+│   ╲  ─  ◈  ─  ╱   │  ┃ Good evening. How can I assist you today?  │
+│    ╰──────────╯    │                                                │
+│                    │  [22:41:18] YOU ▶▶                            │
+│  [ SYSTEM ONLINE ] │  ┃ Open YouTube                               │
+│  MODE: STANDBY     │                                                │
+│  ─────────────     │  [22:41:18] JARVIS ▶▶                         │
+│  CPU  ████░░  42%  │  ┃ Opening YouTube for you, sir.              │
+│  RAM  ██████  61%  │                                                │
+│  PWR  ████████ 82% │  ─────────────────────────────────────────    │
+│  ─────────────     │  ▶ INPUT: [________________] [🎤] [TRANSMIT]  │
+│  22:41:24          │                                                │
+│  SUNDAY 19 APR     │                                                │
+└────────────────────┴────────────────────────────────────────────────┘
+```
+
+---
+
+## `[ 03 ]` // FEATURES
+
+```
+  ◉  ANIMATED HUD RING      Rotating arcs that change color based on
+                             Jarvis's current state — cyan (standby),
+                             orange (thinking), green (listening)
+
+  ◉  LIVE SYSTEM STATS      Real-time CPU, RAM, and battery bars
+                             powered by psutil — updates every 1.5s
+
+  ◉  BOOT SEQUENCE          Cinematic line-by-line startup animation
+                             like a real system initializing
+
+  ◉  CLAUDE AI BRAIN        Every unrecognised command goes to Claude
+                             Sonnet with full conversation memory
+
+  ◉  VOICE INPUT            Speak to Jarvis — Google Speech API
+                             transcribes and processes your command
+
+  ◉  TEXT-TO-SPEECH         Jarvis talks back — offline via pyttsx3,
+                             no internet needed for voice output
+
+  ◉  SMART FALLBACK         Built-in commands run instantly (no API),
+                             everything else routes to Claude
+
+  ◉  TIMESTAMPED LOGS       Every message tagged [HH:MM:SS] — looks
+                             and feels like a real terminal
+```
+
+---
+
+## `[ 04 ]` // ARCHITECTURE
+
+```
+                         ┌──────────────────────┐
+                         │   USER INPUT         │
+                         │  (Type OR Speak)     │
+                         └──────────┬───────────┘
+                                    │
+               ┌────────────────────▼─────────────────────┐
+               │              main.py                      │
+               │         Iron Man HUD Interface            │
+               │  tkinter + customtkinter + canvas rings   │
+               └───────┬─────────────────┬────────────────┘
+                        │                 │
+          ┌─────────────▼──┐     ┌────────▼────────────┐
+          │   voice.py     │     │    command.py        │
+          │                │     │                      │
+          │  pyttsx3 (TTS) │     │  Built-in commands   │
+          │  SpeechRecog   │     │  ─────────────────   │
+          │  (microphone)  │     │  time / date         │
+          └────────────────┘     │  open youtube        │
+                                 │  search google       │
+                                 │  calculator          │
+                                 │  jokes               │
+                                 └────────┬─────────────┘
+                                          │
+                                    MATCH FOUND?
+                                    │         │
+                                   YES        NO
+                                    │         │
+                              INSTANT    ┌────▼────────────┐
+                              RESPONSE   │  api_client.py  │
+                                         │                 │
+                                         │  Anthropic SDK  │
+                                         │  Chat history   │
+                                         │  (last 20 msgs) │
+                                         └────┬────────────┘
+                                              │
+                                    ┌─────────▼──────────┐
+                                    │   Anthropic Cloud  │
+                                    │  claude-sonnet-4   │
+                                    └────────────────────┘
+                                              │
+                              ┌───────────────▼───────────────┐
+                              │  Response → Chat bubble + TTS │
+                              └───────────────────────────────┘
+```
+
+---
+
+## `[ 05 ]` // TECH STACK
+
+| Module | Library | Why |
 |---|---|---|
-| `customtkinter` | 5.2+ | Modern dark-mode UI widgets — regular `tkinter` looks outdated |
-| `anthropic` | 0.34+ | Official Python SDK for Claude API — clean and well-documented |
-| `pyttsx3` | 2.90+ | Offline text-to-speech — works without internet, no API key needed |
-| `SpeechRecognition` | 3.10+ | Wraps Google Speech API for microphone input |
-| `pyaudio` | 0.2.14+ | Low-level microphone access (required by SpeechRecognition) |
-| `python-dotenv` | 1.0+ | Loads `.env` so your API key never touches your source code |
+| HUD Interface | `tkinter` + `customtkinter` | Native Python GUI — no browser, no Electron |
+| AI Brain | `anthropic` SDK | Official Claude API with conversation history |
+| Text-to-Speech | `pyttsx3` | Fully offline TTS — works without internet |
+| Voice Input | `SpeechRecognition` | Google Speech API via microphone |
+| Microphone Access | `pyaudio` | Low-level audio capture |
+| System Stats | `psutil` | Real CPU / RAM / battery readings |
+| Secrets | `python-dotenv` | API key never touches source code |
 
 ---
 
-## 📁 Project Structure
-
-```
-jarvis-ai/
-│
-├── main.py                   # 🖥️  App entry point — UI layout & event handling
-│
-├── modules/
-│   ├── __init__.py           #     Makes this a Python package
-│   ├── voice.py              # 🎤  Text-to-speech + speech recognition
-│   ├── commands.py           # ⚡  Built-in command handler (no API needed)
-│   └── api_client.py         # 🧠  Claude API integration + chat history
-│
-├── .env                      # 🔑  
-├── .env.example              # 📋  
-├── .gitignore                # 🚫  
-├── requirements.txt          # 📦  
-└── README.md                 # 📖  
-```
-
----
-
-## 🚀 Getting Started
+## `[ 06 ]` // GETTING STARTED
 
 ### Prerequisites
-- Python 3.10 or higher
-- A microphone (for voice input)
-- An Anthropic API key — free at [console.anthropic.com](https://console.anthropic.com/settings/keys)
+- Python `3.10+`
+- A microphone
+- Anthropic API key → [console.anthropic.com](https://console.anthropic.com/settings/keys)
 
----
+### Installation
 
-## 🗣️ Available Commands
+```bash
+# 1. Clone the repo
+git clone https://github.com/YOUR_USERNAME/jarvis-ai.git
+cd jarvis-ai
 
-### Built-in (instant, no API call)
+# 2. Create virtual environment
+python -m venv venv
+venv\Scripts\activate        # Windows
+source venv/bin/activate     # macOS/Linux
 
-| Say or Type | What Happens |
-|---|---|
-| `hello` / `hi` / `hey` | Greeting based on time of day |
-| `what time is it` | Current time |
-| `what's today's date` | Today's full date |
-| `search machine learning` | Opens Google search in browser |
-| `youtube search lofi music` | Opens YouTube search |
-| `open youtube` | Opens YouTube |
-| `open github` | Opens GitHub |
-| `calculate 150 * 12` | Quick calculator |
-| `tell me a joke` | Random programmer joke |
-| `bye` / `exit` | Closes the app |
+# 3. Install all dependencies
+pip install -r requirements.txt
 
-### Everything else → Claude AI
+# 4. Set up your API key
+cp .env.example .env
+# Open .env and add: ANTHROPIC_API_KEY=sk-ant-...
 
-Anything not matched above is sent to Claude. Examples:
-
-- *"Explain recursion in simple terms"*
-- *"Write a Python function to reverse a string"*
-- *"What's the capital of Kazakhstan?"*
-- *"Summarise what we talked about"* ← it remembers the session!
-
----
-
-## 🔧 Customise Jarvis
-
-**Change the AI personality** — edit `SYSTEM_PROMPT` in `modules/api_client.py`:
-```python
-SYSTEM_PROMPT = """You are JARVIS... (edit this to change personality)"""
+# 5. Launch
+python main.py
 ```
 
-**Add a new command** — add an `if` block in `modules/commands.py`:
+> **Windows — pyaudio install fail?**
+> ```bash
+> pip install pipwin && pipwin install pyaudio
+> ```
+
+---
+
+## `[ 07 ]` // COMMANDS
+
+### ⚡ Instant (no API call)
+
+| Command | Action |
+|---|---|
+| `hello` / `hi` / `hey` | Time-aware greeting |
+| `what time is it` | Current time |
+| `what's today's date` | Full date |
+| `search [anything]` | Google search in browser |
+| `youtube search [query]` | YouTube search |
+| `open youtube` / `open github` | Opens in browser |
+| `calculate 99 * 12` | Quick math |
+| `tell me a joke` | Programmer joke |
+| `bye` / `exit` | Closes Jarvis |
+
+### 🧠 Claude AI (everything else)
+
+Anything not matched above → sent to Claude with full context:
+
+```
+You:    "Explain how neural networks work"
+You:    "Write a Python function to sort a dict by value"
+You:    "What did we talk about earlier?"    ← it remembers!
+You:    "Translate this to Hindi: ..."
+```
+
+---
+
+## `[ 08 ]` // CUSTOMISE
+
+**Change Jarvis personality** → `api_client.py`:
+```python
+SYSTEM_PROMPT = """You are JARVIS... (rewrite this however you want)"""
+```
+
+**Add a new command** → `command.py`:
 ```python
 if "open spotify" in q:
     webbrowser.open("https://open.spotify.com")
-    return "Opening Spotify."
+    return "Opening Spotify, sir."
 ```
 
-**Change voice speed** — edit `modules/voice.py`:
+**Change voice speed** → `voice.py`:
 ```python
 _engine.setProperty("rate", 175)  # higher = faster
 ```
 
-**Change AI model** — edit `modules/api_client.py`:
+**Change ring color scheme** → `main.py` palette section:
 ```python
-model="claude-sonnet-4-20250514"  # swap to opus for smarter responses
+CYAN  = "#00d4ff"   # change to any hex
+ORANGE = "#ff6b1a"  # thinking color
+GREEN  = "#00ff88"  # listening color
 ```
 
 ---
 
-## 💡 Ideas to Extend This Project
+## `[ 09 ]` // PROJECT STRUCTURE
 
-- 🌦️ Weather integration using OpenWeatherMap API
-- 🎵 Spotify playback controls
-- 📁 Open local files and folders by name
-- 💾 Save chat history to a `.txt` or `.json` file
-- ⚙️ Settings panel for voice speed, theme, and language
+```
+jarvis-ai/
+│
+├── main.py            // Iron Man HUD — UI, animations, layout
+├── command.py         // Built-in command handler
+├── voice.py           // TTS (pyttsx3) + STT (SpeechRecognition)
+├── api_client.py      // Claude API + conversation history
+│
+├── .env               // 🔑 secret API key 
+├── .env.example       // Template 
+├── .gitignore        
+├── requirements.txt   // All dependencies
+└── README.md          // This file
+```
 
 ---
 
+## `[ 10 ]` // FUTURE UPGRADES
 
-## 📄 License
+```
+  ○  Weather widget in sidebar (OpenWeatherMap API)
+  ○  Spotify playback controls
+  ○  Chat history saved to JSON file
+  ○  Wake word detection ("Hey Jarvis...")
+  ○  Multiple AI personas / personality switching
+  ○  Custom hotkey to activate voice input
+```
 
-MIT — build on it, break it, ship it. Leave a ⭐ if it helped!
+---
+
+## `[ 11 ]` // LICENSE
+
+```
+MIT License — build on it, break it, ship it.
+If it helped you, leave a ⭐
+```
 
 ---
 
 <div align="center">
-  <sub>Built with ❤️ and Python </sub>
+
+```
+◈ ─────────────────────────────────────────────────────────── ◈
+       BUILT WITH PYTHON  ·  POWERED BY ANTHROPIC CLAUDE
+            INSPIRED BY TONY STARK'S J.A.R.V.I.S
+◈ ─────────────────────────────────────────────────────────── ◈
+```
+
+![Visits](https://visitor-badge.laobi.icu/badge?page_id=YOUR_USERNAME.jarvis-ai&style=flat-square&color=00d4ff&labelColor=050a0f)
+
 </div>
