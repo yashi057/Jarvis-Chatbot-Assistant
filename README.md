@@ -4,16 +4,17 @@
 
 <br/>
 
-```
+<div align="center">
+<pre>
      ██╗ █████╗ ██████╗ ██╗   ██╗██╗███████╗
      ██║██╔══██╗██╔══██╗██║   ██║██║██╔════╝
      ██║███████║██████╔╝██║   ██║██║███████╗
 ██   ██║██╔══██║██╔══██╗╚██╗ ██╔╝██║╚════██║
 ╚█████╔╝██║  ██║██║  ██║ ╚████╔╝ ██║███████║
  ╚════╝ ╚═╝  ╚═╝╚═╝  ╚═╝  ╚═══╝  ╚═╝╚══════╝
-```
-
-### `// MARK VII — IRON MAN HUD EDITION`
+</pre>
+</div>
+### MARK VII — IRON MAN HUD EDITION`
 
 *Just A Rather Very Intelligent System — now with a real HUD*
 
@@ -27,7 +28,6 @@
 <br/>
 
 > *"Sometimes you gotta run before you can walk."*
-> — Tony Stark
 
 </div>
 
@@ -44,7 +44,7 @@
 
 ---
 
-## `[ 01 ]` // WHAT IS THIS?
+## `[ 01 ]` WHAT IS THIS?
 
 JARVIS is a **voice-enabled AI desktop assistant** with a full **Iron Man HUD interface** — animated rotating rings, live system diagnostics, a cinematic boot sequence, and Claude AI powering every conversation.
 
@@ -52,7 +52,7 @@ This isn't just a chatbot. It's a personal command center that looks like it bel
 
 ---
 
-## `[ 02 ]` // SCREENSHOTS
+## `[ 02 ]` SCREENSHOTS
 
 ```
 ┌─────────────────────────────────────────────────────────────────────┐
@@ -79,7 +79,7 @@ This isn't just a chatbot. It's a personal command center that looks like it bel
 
 ---
 
-## `[ 03 ]` // FEATURES
+## `[ 03 ]` FEATURES
 
 ```
   ◉  ANIMATED HUD RING      Rotating arcs that change color based on
@@ -110,7 +110,7 @@ This isn't just a chatbot. It's a personal command center that looks like it bel
 
 ---
 
-## `[ 04 ]` // ARCHITECTURE
+## `[ 04 ]` ARCHITECTURE
 
 ```
                          ┌──────────────────────┐
@@ -160,7 +160,7 @@ This isn't just a chatbot. It's a personal command center that looks like it bel
 
 ---
 
-## `[ 05 ]` // TECH STACK
+## `[ 05 ]` TECH STACK
 
 | Module | Library | Why |
 |---|---|---|
@@ -174,7 +174,7 @@ This isn't just a chatbot. It's a personal command center that looks like it bel
 
 ---
 
-## `[ 06 ]` // GETTING STARTED
+## `[ 06 ]` GETTING STARTED
 
 ### Prerequisites
 - Python `3.10+`
@@ -211,7 +211,7 @@ python main.py
 
 ---
 
-## `[ 07 ]` // COMMANDS
+## `[ 07 ]` COMMANDS
 
 ### ⚡ Instant (no API call)
 
@@ -240,7 +240,7 @@ You:    "Translate this to Hindi: ..."
 
 ---
 
-## `[ 08 ]` // CUSTOMISE
+## `[ 08 ]` CUSTOMISE
 
 **Change Jarvis personality** → `api_client.py`:
 ```python
@@ -268,7 +268,7 @@ GREEN  = "#00ff88"  # listening color
 
 ---
 
-## `[ 09 ]` // PROJECT STRUCTURE
+## `[ 09 ]` PROJECT STRUCTURE
 
 ```
 jarvis-ai/
@@ -287,7 +287,7 @@ jarvis-ai/
 
 ---
 
-## `[ 10 ]` // FUTURE UPGRADES
+## `[ 10 ]` FUTURE UPGRADES
 
 ```
   ○  Weather widget in sidebar (OpenWeatherMap API)
@@ -300,7 +300,7 @@ jarvis-ai/
 
 ---
 
-## `[ 11 ]` // LICENSE
+## `[ 11 ]` LICENSE
 
 ```
 MIT License — build on it, break it, ship it.
