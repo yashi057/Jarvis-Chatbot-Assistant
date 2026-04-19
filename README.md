@@ -14,7 +14,8 @@
  ╚════╝ ╚═╝  ╚═╝╚═╝  ╚═╝  ╚═══╝  ╚═╝╚══════╝
 </pre>
 </div>
-### MARK VII — IRON MAN HUD EDITION`
+
+ MARK VII — IRON MAN HUD EDITION
 
 *Just A Rather Very Intelligent System — now with a real HUD*
 
