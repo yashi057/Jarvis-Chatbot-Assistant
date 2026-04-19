@@ -314,8 +314,7 @@ If it helped you, leave a ⭐
 
 ```
 ◈ ─────────────────────────────────────────────────────────── ◈
-       BUILT WITH PYTHON  ·  POWERED BY ANTHROPIC CLAUDE
-            INSPIRED BY TONY STARK'S J.A.R.V.I.S
+   BUILT WITH PYTHON  · INSPIRED BY TONY STARK'S J.A.R.V.I.S
 ◈ ─────────────────────────────────────────────────────────── ◈
 ```
 
